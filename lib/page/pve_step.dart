@@ -59,7 +59,7 @@ class _PvePageState extends State<PvePage> {
       onPasswordRequest: () => config.pvePassword,
     );
 
-    terminal.writeLineWithPrompt('已连接');
+    terminal.writeLineWithColor('已连接', Color.green);
 
     session = await client.shell(
       pty: SSHPtyConfig(
@@ -116,12 +116,12 @@ class _PvePageState extends State<PvePage> {
     });
     String result = "${response.requestOptions.method} ${response.realUri}";
     terminal.writeLine(result);
-    terminal.writeLineWithPrompt(response.data.toString().replaceAll("\n", ""));
+    terminal.writeLineWithColor(response.data.toString().replaceAll("\n", ""),Color.yellow);
     var uploadId = response.data?['data'];
     if (uploadId != null) {
       await getRestoreStatus(uploadId);
     }
-    terminal.writeLineWithPrompt("还原备份完成");
+    terminal.writeLineWithColor("还原备份完成",Color.green);
   }
 
   Future<void> copyIsoToLocal() async {
@@ -161,7 +161,7 @@ class _PvePageState extends State<PvePage> {
 
     await stdoutDone.future;
     await stderrDone.future;
-    terminal.writeLineWithPrompt("拷贝完成");
+    terminal.writeLineWithColor("拷贝完成",Color.green);
   }
 
   Future<void> addSmb() async {
@@ -180,8 +180,8 @@ class _PvePageState extends State<PvePage> {
     });
     String result = "${response.requestOptions.method} ${response.realUri}";
     terminal.writeLineWithPrompt(result);
-    terminal.writeLine(response.data.toString().replaceAll("\n", ""));
-    terminal.writeLineWithPrompt("添加 smb 存储成功");
+    terminal.writeLineWithColor(response.data.toString().replaceAll("\n", ""),Color.yellow);
+    terminal.writeLineWithColor("添加 smb 存储成功",Color.green);
   }
 
   Future<void> removeSmb() async {
@@ -189,8 +189,8 @@ class _PvePageState extends State<PvePage> {
     var response = await Http.dio.delete("/api2/extjs/storage//nas");
     String result = "${response.requestOptions.method} ${response.realUri}";
     terminal.writeLineWithPrompt(result);
-    terminal.writeLine(response.data.toString().replaceAll("\n", ""));
-    terminal.writeLineWithPrompt("移除 smb 存储成功");
+    terminal.writeLineWithColor(response.data.toString().replaceAll("\n", ""),Color.yellow);
+    terminal.writeLineWithColor("移除 smb 存储成功",Color.green);
   }
 
   Future<void> updateLocal() async {
@@ -198,7 +198,7 @@ class _PvePageState extends State<PvePage> {
     await Future.delayed(const Duration(seconds: 1));
     Map<String, Map<String, dynamic>> storeMap = await getCurrentStore();
     var digest = storeMap['local']?['digest'];
-    print(digest);
+
     var response = await Http.dio.put("/api2/extjs/storage/local", data: {
       'content': ['backup', 'iso', 'vztmpl', 'images', 'rootdir', 'snippets'],
       'shared': 0,
@@ -213,8 +213,8 @@ class _PvePageState extends State<PvePage> {
     });
     String result = "${response.requestOptions.method} ${response.realUri}";
     terminal.writeLineWithPrompt(result);
-    terminal.writeLine(response.data.toString().replaceAll("\n", ""));
-    terminal.writeLineWithPrompt("调整 local 存储存放内容成功");
+    terminal.writeLineWithColor(response.data.toString().replaceAll("\n", ""),Color.yellow);
+    terminal.writeLineWithColor("调整 local 存储存放内容成功",Color.green);
   }
 
   Future<Map<String, Map<String, dynamic>>> getCurrentStore() async {
@@ -235,7 +235,7 @@ class _PvePageState extends State<PvePage> {
       return previous;
     });
 
-    terminal.writeLine("当前存储有：${storeMap.keys} ");
+    terminal.writeLineWithColor("当前存储有：${storeMap.keys} ",Color.green);
     return storeMap;
   }
 
@@ -249,14 +249,14 @@ class _PvePageState extends State<PvePage> {
       terminal.writeLineWithPrompt(cmd);
       var result = await client.run(cmd);
       String sout = utf8.decode(result).replaceAll("\n", "");
-      terminal.writeLine(sout);
+      terminal.writeLineWithColor(sout,Color.yellow);
     }
     var response = await Http.dio.delete("/api2/extjs/storage//local-lvm");
     String result = "${response.requestOptions.method} ${response.realUri}";
     terminal.writeLineWithPrompt(result);
-    terminal.writeLine(response.data.toString().replaceAll("\n", ""));
+    terminal.writeLineWithColor(response.data.toString().replaceAll("\n", ""),Color.yellow);
 
-    terminal.writeLineWithPrompt("删除 local-lvm 成功");
+    terminal.writeLineWithColor("删除 local-lvm 成功",Color.green);
   }
 
   void turnOnTerminal() {
@@ -382,10 +382,10 @@ class _PvePageState extends State<PvePage> {
       vmHost = await getVmHostUsingArp(cmd);
     }
     if (vmHost.isEmpty) {
-      terminal.writeLineWithPrompt("未找到 ip 地址,可能虚拟机没有连网");
+      terminal.writeLineWithColor("未找到 ip 地址,可能虚拟机没有连网",Color.yellow);
       return;
     }
-    terminal.writeLineWithPrompt("虚拟机 ip 地址为: $vmHost");
+    terminal.writeLineWithColor("虚拟机 ip 地址为: $vmHost",Color.green);
   }
 
   Future<String> getVmHostUsingArp(String cmd) async {
@@ -407,7 +407,7 @@ class _PvePageState extends State<PvePage> {
         await Http.dio.post("/api2/extjs/nodes/pve/qemu/$vmId/status/start");
     String result = "${response.requestOptions.method} ${response.realUri}";
     terminal.writeLineWithPrompt(result);
-    terminal.writeLine(response.data.toString().replaceAll("\n", ""));
-    terminal.writeLineWithPrompt("启动虚拟机成功");
+    terminal.writeLineWithColor(response.data.toString().replaceAll("\n", ""),Color.yellow);
+    terminal.writeLineWithColor("启动虚拟机成功",Color.green);
   }
 }
